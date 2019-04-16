@@ -29,12 +29,12 @@ float calculDistance(byte TRIGGER_PIN, byte ECHO_PIN){
   /* Affiche les résultats en mm*/
   Serial.print(F("Distance: "));
   Serial.print(distance);
-  Serial.print(F("mm ("));
+  Serial.println(F("mm "));
  
    
   /* Délai pour ne pas spamer l'affichage des résultats */
-  delay(200);
-  }
+  delay(2000);
+}
 
 /* initialisation */
 
@@ -55,5 +55,3 @@ void loop() {
 calculDistance(TRIGGER_PIN, ECHO_PIN);
 
 }
-
-  
