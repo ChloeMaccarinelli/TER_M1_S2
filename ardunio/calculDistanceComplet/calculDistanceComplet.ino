@@ -6,10 +6,10 @@
 /* capteur de devant */
 const byte TRIGGER_PIN_AVANT = 2; // Broche TRIGGER
 const byte ECHO_PIN_AVANT = 3;    // Broche ECHO
-
+/* capteur de gauche */
 const byte TRIGGER_PIN_GAUCHE = 4; // Broche TRIGGER
 const byte ECHO_PIN_GAUCHE = 5;    // Broche ECHO
-
+/* capteur de droite */
 const byte TRIGGER_PIN_DROITE = 6; // Broche TRIGGER
 const byte ECHO_PIN_DROITE = 7;    // Broche ECHO
 
@@ -38,6 +38,7 @@ float calculDistance(byte TRIGGER_PIN, byte ECHO_PIN){
   Serial.print(F("Distance: "));
   Serial.print(distance);
   Serial.print(F("mm"));
+   Serial.println(" ");
  
    
   /* Délai pour ne pas spamer l'affichage des résultats */

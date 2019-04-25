@@ -1,0 +1,14 @@
+Distance: 200.77mm 
+Distance: 26.69mm 
+Distance: 65.96mm 
+
+Distance: 201.11mm 
+Distance: 25.67mm 
+Distance: 65.62mm 
+
+Distance: 201.11mm 
+Distance: 26.69mm 
+Distance: 65.11mm
+ 
+
+Distances obtenu selon la disposition que l'on voit sur l'image correspondante et suivant l'ordre ( capteur avant |capteur gauche | capteur droit)
