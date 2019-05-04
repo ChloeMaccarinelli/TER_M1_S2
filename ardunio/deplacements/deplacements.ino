@@ -1,10 +1,5 @@
 
-/* 
- * Code permettant les déplacements du robot en évitant les obstacles
- */
-#include <Wire.h>
 #include <Adafruit_MotorShield.h>
-
 
 #define FORWARD_ 0
 #define BACKWARD_ 2
@@ -12,119 +7,124 @@
 #define RIGHT_ 1
 
 
-/* On initialise les broches trigger et echo*/
-/* capteur de devant */
-const byte TRIGGER_PIN_AVANT = 2; // Broche TRIGGER
-const byte ECHO_PIN_AVANT = 3;    // Broche ECHO
-/* capteur de gauche */
-const byte TRIGGER_PIN_GAUCHE = 4; // Broche TRIGGER
-const byte ECHO_PIN_GAUCHE = 5;    // Broche ECHO
-/* capteur de droite */
-const byte TRIGGER_PIN_DROITE = 6; // Broche TRIGGER
-const byte ECHO_PIN_DROITE = 7;    // Broche ECHO
-/* fin d'initialisation des broches pour les capteurs */
+/* Ultrasonic sensors */      
+const uint8_t echoPin_right = 7;  // echo signal (receives)
+const uint8_t echoPin_front =  A3;
+const uint8_t echoPin_left = 8;
 
-/* Vitesse du son  en mm/us */
-const float VITESSE_SON = 340.0 / 1000;
- 
-/* Constantes pour le timeout */
-const unsigned long TIMEOUT = 13000UL; // 13ms = ~4m à 340m/s
-
-/* Sécurité */
-const float distanceSecurite = 20; //distance de sécurité pour que le robot puisse tourner sans toucher l'obstacle
-const float taillerobot = 19;  //taille du robot
-const float marge = distanceSecurite / 3; 
+const uint8_t trigPin_right = 4;  // trigger signal (sends)
+const uint8_t trigPin_front = A2;
+const uint8_t trigPin_left = 2;
 
 
-/* on initialise les moteurs gauche et droit */
-volatile int currentState = FORWARD_; 
-const int motorSpeed = 200; // de 0 (off) a 255 (max)
-
-// Create the motor shield object with the default I2C address
-Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-
-// Motor 4 -> left / Motor 2 -> right
-Adafruit_DCMotor *moteurGauche = AFMS.getMotor(1);
-Adafruit_DCMotor *moteurDroit = AFMS.getMotor(2);
-
-void setupMoteurs(){
-  
-  Serial.println("init motor");
-  moteurGauche->setSpeed(motorSpeed);
-  moteurGauche->run(FORWARD);
-  moteurGauche->run(RELEASE);
-  Serial.println("OK");
-
-  moteurDroit->setSpeed(motorSpeed + 10);
-  moteurDroit->run(FORWARD);
-  moteurDroit->run(RELEASE);
-  Serial.println("OK");
-}
-/* fin initialisation des moteurs */
-
-/* on défini les actions des moteurs en fonction de la direction du robot */
-void avancer() {
-  moteurGauche->run(FORWARD);
-  moteurDroit->run(FORWARD);
-}
-
-void reculer() {
-  moteurGauche->run(BACKWARD);
-  moteurDroit->run(BACKWARD);
-}
-
-void tournerAGauche() {
-  moteurGauche->run(BACKWARD);
-  moteurDroit->run(FORWARD);
-}
-
-void tournerADroite() {
-  moteurGauche->run(FORWARD);
-  moteurDroit->run(BACKWARD);
-}
-void arreter() {
-  moteurGauche->run(RELEASE);
-  moteurDroit->run(RELEASE);
-}
-/* fin de définition des actions moteurs */
-
-
-/* fonction de calcul de distance entre le robot et un éventuel obstacle */
-float calculDistance(byte TRIGGER_PIN, byte ECHO_PIN){
-    
-  /* on lance le calcul de distance en envoyant une impulsion de niveau haut de 10µs sur  TRIGGER */
-  pinMode(TRIGGER_PIN, OUTPUT);
-  digitalWrite(TRIGGER_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIGGER_PIN, LOW);
-  
-  /*  on mesure le temps entre l'envoi de l'impulsion  et son renvoi si un obstacle existe */
-  long mesure_envoi_reception = pulseIn(ECHO_PIN, HIGH, TIMEOUT);
-   
-  /* Calcul de la distance en mm*/
-  float distance = mesure_envoi_reception / 2.0 * VITESSE_SON;
-   
-  Serial.print(F("Distance: "));
-  Serial.print(distance);
-  Serial.print(F("mm"));
-   Serial.println(" ");
- 
-   
-  /* Délai pour ne pas spamer l'affichage des résultats */
-  delay(2000);
-  }
-/* fin fonction caculDistance */
-  
+/* Measurements */
+const float safetyDistance = 30; // according with the speed. Expressed in cm
+const float robotWidth = 20; // expressed in cm
+const float marge = safetyDistance / 3; // margin of movement. It should move between the marging and the safetyDistance
 
 /*
  * Determines where to move
  */
-int objectDetected = 0; 
+int objectDetected = 0; // the side where the object is detected
 boolean searchingObject = false;
 int tick = 0;
 int randomDir = FORWARD_;
 boolean stop_ = false;
 
+
+/* Movement */
+const int motorSpeed = 60; // from 0 (off) to 255 (max speed)
+
+// Create the motor shield object with the default I2C address
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+// Or, create it with a different I2C address (say for stacking)
+// Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61); 
+
+// Motor 4 -> left / Motor 2 -> right
+Adafruit_DCMotor *motorLeft = AFMS.getMotor(4);
+Adafruit_DCMotor *motorRight = AFMS.getMotor(2);
+
+
+/*
+ * Motors setup and movement
+ */ 
+void setupMotors() {
+  // Left wheel
+  motorLeft->setSpeed(motorSpeed);
+  motorLeft->run(FORWARD);
+  motorLeft->run(RELEASE);
+  
+  // Right wheel
+  motorRight->setSpeed(motorSpeed);
+  motorRight->run(FORWARD);
+  motorRight->run(RELEASE);
+}
+
+void moveForward() {
+  motorRight->run(FORWARD);
+  motorLeft->run(FORWARD);
+}
+
+void moveBackward() {
+  motorRight->run(BACKWARD);
+  motorLeft->run(BACKWARD);
+
+  // turn on back led
+  // turnOnLed(ledPin_back);
+}
+
+void moveLeft() {
+  motorLeft->run(RELEASE);
+  motorRight->run(FORWARD);
+
+  // turn on left led
+  // turnOnLed(ledPin_left);
+}
+
+void moveRight() {
+  motorLeft->run(FORWARD);
+  motorRight->run(RELEASE);
+
+  // turn on right led
+  // turnOnLed(ledPin_right);
+}
+
+void dontMove() {
+  motorLeft->run(RELEASE);
+  motorRight->run(RELEASE);
+}
+
+
+/*
+ * Calculates the distance with the information obtained from the sensors  
+ */
+float calculDistance(uint8_t trigPin, uint8_t echoPin){
+  uint32_t duration; // duration of the round trip
+  float cm;  // distance of the obstacle
+
+  // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
+  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+  pinMode(trigPin, OUTPUT);
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(3);
+
+  // Start trigger signal
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+ 
+  // Read the signal from the sensor: a HIGH pulse whose
+  // duration is the time (in microseconds) from the sending
+  // of the ping to the reception of its echo off of an object.
+
+  pinMode(echoPin, INPUT);
+  duration = pulseIn(echoPin, HIGH);
+ 
+  // convert the time into a distance
+  cm = (float)((duration<<4)+duration)/1000.0; // cm = 17 * duration/1000
+  return cm;
+}
 
 
 void initValue() {
@@ -132,12 +132,12 @@ void initValue() {
   searchingObject = false;
   tick = 0;
 }
+
 /*
- * Determines where to move to avoid obstacles
+ * Determines where to move
  */
-int explorer(float cm_front, float cm_left, float cm_right) {
-
-
+int explore(float cm_left, float cm_front, float cm_right) {  
+     
  if (tick > 203) {
   initValue();
   stop_ = false;
@@ -146,46 +146,47 @@ int explorer(float cm_front, float cm_left, float cm_right) {
       randomDir = -objectDetected;
       stop_ = true;
       return randomDir;
-}
-if (searchingObject && objectDetected == LEFT_){
+  }
+  
+ if (searchingObject && objectDetected == LEFT_){
     // Turn until robot is parallel to the object
-    if (cm_left < distanceSecurite){
+    if (cm_left < safetyDistance){
          searchingObject = false;
     }
     else {
-        // Serial.println(" Tourne à droite pour retrouver l'object ");
+         Serial.println(" Tourne à droite pour retrouver l'object ");
          return RIGHT_;
     }
-}
-else if (searchingObject && objectDetected == RIGHT_){
+ }
+ else if (searchingObject && objectDetected == RIGHT_){
     // Turn until robot is parallel to the object
-    if (cm_right < distanceSecurite){
+    if (cm_right < safetyDistance){
          searchingObject = false;
     }
     else {
-        // Serial.println(" Tourne à gauche pour retrouver l'object ");
+        Serial.println(" Tourne à gauche pour retrouver l'object ");
          return LEFT_;
     }
  }
 
  if (objectDetected == LEFT_) {
       // If there is already an object detected
-      if(cm_left > distanceSecurite) {
+      if(cm_left > safetyDistance) {
         // If there is an object detected on the left and he has passed it, then he has to turn left
         return LEFT_;
       } 
-      if (cm_left < distanceSecurite - marge || cm_front < distanceSecurite){
+      if (cm_left < safetyDistance - marge || cm_front < safetyDistance){
         return RIGHT_;
       } 
     return FORWARD_; 
   } 
   else if (objectDetected == RIGHT_) {
       // If there is already an object detected
-      if(cm_right > distanceSecurite) {
+      if(cm_right > safetyDistance) {
         // If there is an object detected on the left and he has passed it, then he has to turn right
         return RIGHT_;
       } 
-      if ( cm_right < distanceSecurite - marge || cm_front < distanceSecurite){
+      if (cm_right < safetyDistance - marge || cm_front < safetyDistance){
           return LEFT_;
       } 
     return FORWARD_; 
@@ -196,23 +197,23 @@ else if (searchingObject && objectDetected == RIGHT_){
       return randomDir; 
     }
     
-    if(cm_left < distanceSecurite) {
+    if(cm_left < safetyDistance) {
         // Object detected on the left side
          objectDetected = LEFT_;
      }
-     else if(cm_right < distanceSecurite) {
+     else if(cm_right < safetyDistance) {
         // Object detected on the right side
          objectDetected = RIGHT_;
      }
-     else if(cm_front < distanceSecurite) {
+     else if(cm_front < safetyDistance) {
         // Object detected in front of him
         
-        if(cm_left < distanceSecurite) {
+        if(cm_left < safetyDistance) {
             // There is an object on the left side 
             objectDetected = LEFT_;
             return RIGHT_;
         }
-        else if(cm_right < distanceSecurite) {
+        else if(cm_right < safetyDistance) {
             // There is an object on the right side
             objectDetected = RIGHT_;
             return LEFT_;
@@ -225,7 +226,7 @@ else if (searchingObject && objectDetected == RIGHT_){
                 return RIGHT_;
             }
             else {
-              //Serial.println(" - RIGHT");
+              Serial.println(" - RIGHT");
               objectDetected = RIGHT_;
               searchingObject = true;
               return LEFT_;
@@ -233,109 +234,88 @@ else if (searchingObject && objectDetected == RIGHT_){
         }       
      }
      return FORWARD_; 
-}
-   
+  }
 } 
 
 
-/*
- * Moves the robot
- */
-void navigate()
-{
-  int resultatexplorer;
 
-  // distances from all sides
-  float cm_front;
-  float cm_right;
+/*
+ * Moves the wheels
+ */
+void navigate(){
+  int resultatExplore;
+  
+  float cm_front;  // distance of the obstacle
   float cm_left;
-   
+  float cm_right;
+
   
   noInterrupts();
-  cm_front = calculDistance(TRIGGER_PIN_AVANT, ECHO_PIN_AVANT);
-  cm_left = calculDistance(TRIGGER_PIN_GAUCHE, ECHO_PIN_GAUCHE);
-  cm_right = calculDistance(TRIGGER_PIN_DROITE, ECHO_PIN_DROITE);
-  
-  resultatexplorer=explorer(cm_front, cm_right, cm_left);  
- 
-  interrupts();
-  tick++;
-   if (stop_){
-    arreter();
-    return;
-    
-}
-moteurDroit->run(RELEASE);
-  moteurGauche->run(RELEASE);
+  cm_front = calculDistance(trigPin_front, echoPin_front);
+  cm_left = calculDistance(trigPin_left, echoPin_left);
+  cm_right = calculDistance(trigPin_right, echoPin_right);
 
-  switch(resultatexplorer) {
+  resultatExplore = explore(cm_left,cm_front, cm_right);
+  interrupts();
+
+  tick++;
+
+  if (stop_){
+    dontMove();
+    return;
+  }
+  
+  // turn off leds
+  // turnOffAllLeds();
+  
+  motorRight->run(RELEASE);
+  motorLeft->run(RELEASE);
+
+  switch(resultatExplore) {
     // move forward  
     case FORWARD_:  
-      //Serial.print("avant  ");
-      avancer();
+      Serial.print("avant  ");
+      moveForward();
       break;
 
     // move backward
     case BACKWARD_:
-      //Serial.print("arriere  ");
-      reculer();
+      Serial.print("arriere  ");
+      moveBackward();
       break;
 
     // move left
     case LEFT_: 
-      //Serial.print("gauche  ");
-      tournerAGauche();
+      Serial.print("gauche  ");
+      moveLeft();
       break;
 
     // move right
     case RIGHT_:
-      //Serial.print("droite  ");
-      tournerADroite();
+      Serial.print("droite  ");
+      moveRight();
       break;
   }
 }
 
- 
+
 /*
  * Initial setup
  */
 void setup() {
-  // initialize serial communication
-  Serial.begin(115200);
- 
-
-  Serial.println("init capteur");
-  /* Initialise les broches trigger et echo */
-  pinMode(TRIGGER_PIN_AVANT, OUTPUT);
-  digitalWrite(TRIGGER_PIN_AVANT, LOW);
-  pinMode(ECHO_PIN_AVANT, INPUT);
-   pinMode(TRIGGER_PIN_GAUCHE, OUTPUT);
-  digitalWrite(TRIGGER_PIN_GAUCHE, LOW);
-  pinMode(ECHO_PIN_GAUCHE, INPUT);
-   pinMode(TRIGGER_PIN_DROITE, OUTPUT);
-  digitalWrite(TRIGGER_PIN_DROITE, LOW);
-  pinMode(ECHO_PIN_DROITE, INPUT);
-  Serial.println("OK");
-   Serial.println("Adafruit Motorshield v2 - DC Motor test!");
-  // initialise le moteur
-  AFMS.begin();
-  setupMoteurs();
-
+  // initialize serial communication:
+  Serial.begin(9600);
+  AFMS.begin();  // create with the default frequency 1.6KHz
   
-
+  setupMotors();
+  //setupLeds();
 }
 
 
 /*
- * It's the function that will be called at each tick time. It executes navigate and sends the message
+ * It's the function that will be called at each tick time
  */
 void loop()
 {
-  calculDistance(TRIGGER_PIN_AVANT, ECHO_PIN_AVANT); 
-  
-calculDistance(TRIGGER_PIN_GAUCHE, ECHO_PIN_GAUCHE);
- 
-calculDistance(TRIGGER_PIN_DROITE, ECHO_PIN_DROITE);
-
+  navigate();
 }
-  
