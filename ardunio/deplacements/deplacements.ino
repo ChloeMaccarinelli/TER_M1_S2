@@ -250,13 +250,13 @@ void navigate(){
   float cm_right;
 
   
-  noInterrupts();
+  //noInterrupts();
   cm_front = calculDistance(trigPin_front, echoPin_front);
   cm_left = calculDistance(trigPin_left, echoPin_left);
   cm_right = calculDistance(trigPin_right, echoPin_right);
 
   resultatExplore = explore(cm_left,cm_front, cm_right);
-  interrupts();
+  //interrupts();
 
   tick++;
 
