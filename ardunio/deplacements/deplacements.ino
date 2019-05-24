@@ -1,4 +1,3 @@
-
 #include <Adafruit_MotorShield.h>
 
 #define FORWARD_ 0
@@ -9,12 +8,12 @@
 
 /* Ultrasonic sensors */      
 const uint8_t echoPin_right = 7;  // echo signal (receives)
-const uint8_t echoPin_front =  A3;
-const uint8_t echoPin_left = 8;
+const uint8_t echoPin_front =  A1;
+const uint8_t echoPin_left = A3;
 
 const uint8_t trigPin_right = 4;  // trigger signal (sends)
-const uint8_t trigPin_front = A2;
-const uint8_t trigPin_left = 2;
+const uint8_t trigPin_front = A0;
+const uint8_t trigPin_left = A2;
 
 
 /* Measurements */
@@ -41,7 +40,7 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 // Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61); 
 
 // Motor 4 -> left / Motor 2 -> right
-Adafruit_DCMotor *motorLeft = AFMS.getMotor(4);
+Adafruit_DCMotor *motorLeft = AFMS.getMotor(1);
 Adafruit_DCMotor *motorRight = AFMS.getMotor(2);
 
 
@@ -69,24 +68,20 @@ void moveBackward() {
   motorRight->run(BACKWARD);
   motorLeft->run(BACKWARD);
 
-  // turn on back led
-  // turnOnLed(ledPin_back);
+  
 }
 
 void moveLeft() {
   motorLeft->run(RELEASE);
   motorRight->run(FORWARD);
 
-  // turn on left led
-  // turnOnLed(ledPin_left);
+  
 }
 
 void moveRight() {
   motorLeft->run(FORWARD);
   motorRight->run(RELEASE);
 
-  // turn on right led
-  // turnOnLed(ledPin_right);
 }
 
 void dontMove() {
@@ -250,13 +245,13 @@ void navigate(){
   float cm_right;
 
   
-  //noInterrupts();
+  
   cm_front = calculDistance(trigPin_front, echoPin_front);
   cm_left = calculDistance(trigPin_left, echoPin_left);
   cm_right = calculDistance(trigPin_right, echoPin_right);
 
   resultatExplore = explore(cm_left,cm_front, cm_right);
-  //interrupts();
+ 
 
   tick++;
 
@@ -265,8 +260,7 @@ void navigate(){
     return;
   }
   
-  // turn off leds
-  // turnOffAllLeds();
+  
   
   motorRight->run(RELEASE);
   motorLeft->run(RELEASE);
