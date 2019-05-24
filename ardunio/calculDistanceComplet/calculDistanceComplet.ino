@@ -2,11 +2,11 @@
  
 /* On initialise les broches trigger et echo*/
 /* capteur de devant */
-const byte TRIGGER_PIN_AVANT = A2; // Broche TRIGGER
-const byte ECHO_PIN_AVANT = A3;    // Broche ECHO
+const byte TRIGGER_PIN_AVANT = A0; // Broche TRIGGER
+const byte ECHO_PIN_AVANT = A1;    // Broche ECHO
 /* capteur de gauche */
-const byte TRIGGER_PIN_GAUCHE = 2; // Broche TRIGGER
-const byte ECHO_PIN_GAUCHE = 8;    // Broche ECHO
+const byte TRIGGER_PIN_GAUCHE = A2; // Broche TRIGGER
+const byte ECHO_PIN_GAUCHE = A3;    // Broche ECHO
 /* capteur de droite */
 const byte TRIGGER_PIN_DROITE = 4; // Broche TRIGGER
 const byte ECHO_PIN_DROITE = 7;    // Broche ECHO
