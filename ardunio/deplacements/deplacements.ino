@@ -17,7 +17,7 @@ const uint8_t trigPin_left = A2;
 
 
 /* Measurements */
-const float safetyDistance = 30; // according with the speed. Expressed in cm
+const float safetyDistance = 50; // according with the speed. Expressed in cm
 const float robotWidth = 20; // expressed in cm
 const float marge = safetyDistance / 3; // margin of movement. It should move between the marging and the safetyDistance
 
@@ -32,7 +32,7 @@ boolean stop_ = false;
 
 
 /* Movement */
-const int motorSpeed = 60; // from 0 (off) to 255 (max speed)
+const int motorSpeed = 100; // from 0 (off) to 255 (max speed)
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -163,70 +163,102 @@ int explore(float cm_left, float cm_front, float cm_right) {
          return LEFT_;
     }
  }
-
+//si l'objet est détecté à gauche
  if (objectDetected == LEFT_) {
-      // If there is already an object detected
+     //et que la distance en le robot et l'objet > distance de sécurité
       if(cm_left > safetyDistance) {
-        // If there is an object detected on the left and he has passed it, then he has to turn left
+        //on tourne à gauche pour le retrouver
         return LEFT_;
       } 
+      // sinon si il y a danger de collision on tourne à droite
       if (cm_left < safetyDistance - marge || cm_front < safetyDistance){
         return RIGHT_;
       } 
+      
     return FORWARD_; 
   } 
+  
   else if (objectDetected == RIGHT_) {
-      // If there is already an object detected
       if(cm_right > safetyDistance) {
-        // If there is an object detected on the left and he has passed it, then he has to turn right
+
         return RIGHT_;
       } 
       if (cm_right < safetyDistance - marge || cm_front < safetyDistance){
           return LEFT_;
       } 
+      
     return FORWARD_; 
   }
+  
   else {
-    // There's no object detected
+    //sinon si il n'y a pas d'objet on avance
     if (tick < 4) {
-      return randomDir; 
+      //return randomDir; 
+      return FORWARD_;
     }
-    
-    if(cm_left < safetyDistance) {
-        // Object detected on the left side
-         objectDetected = LEFT_;
-     }
-     else if(cm_right < safetyDistance) {
-        // Object detected on the right side
-         objectDetected = RIGHT_;
-     }
-     else if(cm_front < safetyDistance) {
-        // Object detected in front of him
+
+    // si un objet est détecté devant et que il y a risque de colision
+    if(cm_front < safetyDistance) {
+      
+     // on regarde si a gauche il y a un objet
+        if(cm_left < safetyDistance && cm_right < safetyDistance) {
+         objectDetected = FORWARD_;  
+         searchingObject = false;  
+         return BACKWARD_;
+        }
         
-        if(cm_left < safetyDistance) {
-            // There is an object on the left side 
+    // on regarde si a gauche il y a un objet
+        else if(cm_left < safetyDistance && cm_right > safetyDistance) {
+            // si  oui on tourne à droite 
+            
+            return RIGHT_;
+        }
+        // sinon on regarde à droite
+        else if(cm_right < safetyDistance && cm_left > safetyDistance) {
+            // There is an object on the right side
+            
+            return LEFT_;
+        } 
+        else{
+          
+          while (tick<200){
+          return BACKWARD_;}
+          
+          }
+     }
+      // si un objet est détecté devant et que il y a risque de colision
+   /* if(cm_front > safetyDistance && objectDetected == FORWARD_) {
+      
+     // on regarde si a gauche il y a un objet
+        if(cm_left < safetyDistance && cm_right < safetyDistance) {
+            objectDetected = FORWARD_;  
+         searchingObject = false;  
+         return BACKWARD_; 
+        }
+        
+     // on regarde si a gauche il y a un objet
+        else if(cm_left < safetyDistance && cm_right > safetyDistance) {
+            // si  oui on tourne à droite 
             objectDetected = LEFT_;
             return RIGHT_;
         }
-        else if(cm_right < safetyDistance) {
+        // sinon on regarde à droite
+        else if(cm_right < safetyDistance && cm_left > safetyDistance) {
             // There is an object on the right side
             objectDetected = RIGHT_;
             return LEFT_;
         }
-        else {
-            // Compare both sides
-            if  (cm_right > cm_left) {
-                objectDetected = LEFT_;
-                searchingObject = true;
-                return RIGHT_;
-            }
-            else {
-              Serial.println(" - RIGHT");
-              objectDetected = RIGHT_;
-              searchingObject = true;
-              return LEFT_;
-            }  
-        }       
+
+        else { return BACKWARD_; }      
+     }*/
+    
+     else if(cm_right < safetyDistance) {
+        // Object detected on the right side
+         objectDetected = RIGHT_;
+     }
+     else if(cm_left < safetyDistance) {
+        // Object detected on the left side
+         objectDetected = LEFT_;
      }
      return FORWARD_; 
   }
