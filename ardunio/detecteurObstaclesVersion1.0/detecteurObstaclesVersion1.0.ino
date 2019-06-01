@@ -93,6 +93,7 @@ void detectObstacles(){
   
   if (distance < safetyDistanceFront)/* obstacle devant */ 
   { 
+    Serial.println (" " ); 
     Serial.println ("********* ATTENTION DEVANT **********" ); 
     Serial.print ("collision possible à : " ); 
     Serial.print ( distance); 
@@ -114,6 +115,7 @@ void detectObstacles(){
     
     if (distance < safetyDistanceRight)//obstacle à droite
     { 
+      Serial.println (" " ); 
       Serial.println ("********* ATTENTION DROITE *******" ); 
       Serial.print ("collision possible à : " ); 
       Serial.print ( distance); 
@@ -131,6 +133,7 @@ void detectObstacles(){
       distance = (float)((duration<<4)+duration)/1000.0;// converti la distance en cm 
       
       if (distance < safetyDistanceLeft) { 
+        Serial.println (" " ); 
         Serial.println ("********* ATTENTION GAUCHE *******" ); 
         Serial.print ("collision possible à : " ); 
         Serial.print ( distance); 
