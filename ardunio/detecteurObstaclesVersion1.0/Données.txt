@@ -1,40 +1,60 @@
  
 ********* ATTENTION DEVANT **********
-collision possible à : 6 cm correction de la trajectoire en cours
+collision possible Ã  : 6 cm correction de la trajectoire en cours
+
 ********* ATTENTION DROITE *******
-collision possible à : 38 cm********* ATTENTION GAUCHE *******
-collision possible à : 5 cm faire demi tour
+collision possible Ã  : 38 cm
+
+********* ATTENTION GAUCHE *******
+collision possible Ã  : 5 cm faire demi tour
  
 ********* ATTENTION DEVANT **********
-collision possible à : 9 cm correction de la trajectoire en cours
+collision possible Ã  : 9 cm correction de la trajectoire en cours
+
 ********* ATTENTION DROITE *******
-collision possible à : 5 cm********* ATTENTION GAUCHE *******
-collision possible à : 11 cm faire demi tour
+collision possible Ã  : 5 cm
+
+********* ATTENTION GAUCHE *******
+collision possible Ã  : 11 cm faire demi tour
  
 ********* ATTENTION DEVANT **********
-collision possible à : 12 cm correction de la trajectoire en cours
+collision possible Ã  : 12 cm correction de la trajectoire en cours
+
 ********* ATTENTION DROITE *******
-collision possible à : 38 cm 
+collision possible Ã  : 38 cm 
+
 ********* ATTENTION DEVANT **********
-collision possible à : 10 cm correction de la trajectoire en cours
+collision possible Ã  : 10 cm correction de la trajectoire en cours
+
 ********* ATTENTION DROITE *******
-collision possible à : 5 cm 
+collision possible Ã  : 5 cm 
+
 ********* ATTENTION DEVANT **********
-collision possible à : 4 cm correction de la trajectoire en cours
+collision possible Ã  : 4 cm correction de la trajectoire en cours
+
 ********* ATTENTION DROITE *******
-collision possible à : 6 cm 
+collision possible Ã  : 6 cm 
+
 ********* ATTENTION DEVANT **********
-collision possible à : 4 cm correction de la trajectoire en cours
+collision possible Ã  : 4 cm correction de la trajectoire en cours
+
 ********* ATTENTION DROITE *******
-collision possible à : 6 cm 
+collision possible Ã  : 6 cm 
+
 ********* ATTENTION DEVANT **********
-collision possible à : 8 cm correction de la trajectoire en cours
+collision possible Ã  : 8 cm correction de la trajectoire en cours
+
 ********* ATTENTION DROITE *******
-collision possible à : 5 cm********* ATTENTION GAUCHE *******
-collision possible à : 12 cm faire demi tour
+collision possible Ã  : 5 cm
+
+********* ATTENTION GAUCHE *******
+collision possible Ã  : 12 cm faire demi tour
  
 ********* ATTENTION DEVANT **********
-collision possible à : 8 cm correction de la trajectoire en cours
+collision possible Ã  : 8 cm correction de la trajectoire en cours
+
 ********* ATTENTION DROITE *******
-collision possible à : 8 cm********* ATTENTION GAUCHE *******
-collision possible à : 6 cm faire demi tour
+collision possible Ã  : 8 cm
+
+********* ATTENTION GAUCHE *******
+collision possible Ã  : 6 cm faire demi tour
