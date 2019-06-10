@@ -60,8 +60,8 @@ pinMode(echoPinGauche, INPUT);// recoit l'echo GAUCHE
 /*******         SECURITE          *********/
 
 const float safetyDistanceFront = 20;
-const float safetyDistanceRight = 50;
-const float safetyDistanceLeft = 50;
+const float safetyDistanceRight = 40;
+const float safetyDistanceLeft = 40;
 
 
 /*******        SETUP     *********/
